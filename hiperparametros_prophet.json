@@ -1,0 +1,38 @@
+{
+  "b2171a657de72f8b": {
+    "articulo": "CRONOS-N04",
+    "params": {
+      "changepoint_prior_scale": 0.3352541391175922,
+      "seasonality_prior_scale": 2.508421445867785,
+      "seasonality_mode": "additive",
+      "n_changepoints": 10,
+      "yearly_seasonality": 10
+    },
+    "score": 1812.6759122821052,
+    "metrica": "rmse"
+  },
+  "41bead3a74f967b6": {
+    "articulo": "HORIZON-M09",
+    "params": {
+      "changepoint_prior_scale": 0.1220020000984611,
+      "seasonality_prior_scale": 1.0592799577250593,
+      "seasonality_mode": "multiplicative",
+      "n_changepoints": 10,
+      "yearly_seasonality": 5
+    },
+    "score": 249.87870920577225,
+    "metrica": "rmse"
+  },
+  "88b5d39785685887": {
+    "articulo": "TAURO 2-N04",
+    "params": {
+      "changepoint_prior_scale": 0.10026392954618926,
+      "seasonality_prior_scale": 6.448080588622513,
+      "seasonality_mode": "additive",
+      "n_changepoints": 10,
+      "yearly_seasonality": 10
+    },
+    "score": 338.3576592670468,
+    "metrica": "rmse"
+  }
+}

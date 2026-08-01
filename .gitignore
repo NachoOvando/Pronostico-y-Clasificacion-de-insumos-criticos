@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Windows
+desktop.ini
+
+# Entorno / credenciales
+.env
+.env.local
+.env.production
+*.pem
+secrets/
