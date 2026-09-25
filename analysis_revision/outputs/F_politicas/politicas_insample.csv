@@ -1,0 +1,4 @@
+Familia,UM,Política,Lead_Time_dias,Demanda_media_mensual,Desvio_mensual,Stock_Seguridad,ROP_o_Nivel_Objetivo,Stock_Maximo,Cobertura_SS_dias
+CONJ SISTEMA PU,G,"Revisión continua (s,Q)",45,8405980.2,328335.1,824359.7,13433330.0,21839310.2,2.9
+PUNTERA ACERO 59 NORMAL,PAA,"Revisión periódica (R,S)",40,13779.2,470.5,1473.2,33624.8,47404.0,3.2
+CAJA EMPAQUE (BOTA/BOTÍN),UN,"Revisión periódica (R,S)",30,13779.2,470.5,1363.9,28922.4,42701.6,3.0

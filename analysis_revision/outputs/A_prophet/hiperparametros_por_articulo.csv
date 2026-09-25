@@ -1,0 +1,4 @@
+Articulo,changepoint_prior_scale,seasonality_prior_scale,seasonality_mode,n_changepoints,yearly_seasonality
+CRONOS-N04,0.3352541391175922,2.508421445867785,additive,10,10
+HORIZON-M09,0.1220020000984611,1.0592799577250593,multiplicative,10,5
+TAURO 2-N04,0.10026392954618926,6.448080588622513,additive,10,10

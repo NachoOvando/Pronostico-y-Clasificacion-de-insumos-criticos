@@ -1,0 +1,40 @@
+grep -rn '7.22' (excl. analysis_revision/): SIN COINCIDENCIAS
+  (1 línea(s) descartada(s) por ser blobs base64 de imagen)
+grep -rn '7,22' (excl. analysis_revision/): SIN COINCIDENCIAS
+grep -rn '1.93' (excl. analysis_revision/): /home/user/Pronostico-y-Clasificacion-de-insumos-criticos/Pronostico_Ventas.ipynb:405:     "shell.execute_reply": "2026-07-31T23:23:18.149385Z"
+/home/user/Pronostico-y-Clasificacion-de-insumos-criticos/Pronostico_Ventas.ipynb:1377:    "outputId": "c4c53c4a-0841-4fbb-a168-16933ec61034"
+  (1 línea(s) descartada(s) por ser blobs base64 de imagen)
+grep -rn '1,93' (excl. analysis_revision/): SIN COINCIDENCIAS
+grep -rn '3.74' (excl. analysis_revision/): /home/user/Pronostico-y-Clasificacion-de-insumos-criticos/Insumos_Criticos_KMeans.ipynb:83:      "userId": "08540649357404979690"
+/home/user/Pronostico-y-Clasificacion-de-insumos-criticos/Insumos_Criticos_KMeans.ipynb:144:      "userId": "08540649357404979690"
+/home/user/Pronostico-y-Clasificacion-de-insumos-criticos/Insumos_Criticos_KMeans.ipynb:205:      "userId": "08540649357404979690"
+/home/user/Pronostico-y-Clasificacion-de-insumos-criticos/Insumos_Criticos_KMeans.ipynb:312:      "userId": "08540649357404979690"
+/home/user/Pronostico-y-Clasificacion-de-insumos-criticos/Insumos_Criticos_KMeans.ipynb:455:      "userId": "08540649357404979690"
+/home/user/Pronostico-y-Clasificacion-de-insumos-criticos/Insumos_Criticos_KMeans.ipynb:505:      "userId": "08540649357404979690"
+/home/user/Pronostico-y-Clasificacion-de-insumos-criticos/Insumos_Criticos_KMeans.ipynb:673:      "userId": "08540649357404979690"
+/home/user/Pronostico-y-Clasificacion-de-insumos-criticos/Insumos_Criticos_KMeans.ipynb:745:      "userId": "08540649357404979690"
+/home/user/Pronostico-y-Clasificacion-de-insumos-criticos/Insumos_Criticos_KMeans.ipynb:1276:      "userId": "08540649357404979690"
+/home/user/Pronostico-y-Clasificacion-de-insumos-criticos/Insumos_Criticos_KMeans.ipynb:1335:      "userId": "08540649357404979690"
+/home/user/Pronostico-y-Clasificacion-de-insumos-criticos/Insumos_Criticos_KMeans.ipynb:1424:      "userId": "08540649357404979690"
+/home/user/Pronostico-y-Clasificacion-de-insumos-criticos/Insumos_Criticos_KMeans.ipynb:1891:      "userId": "08540649357404979690"
+/home/user/Pronostico-y-Clasificacion-de-insumos-criticos/Insumos_Criticos_KMeans.ipynb:1974:      "userId": "08540649357404979690"
+/home/user/Pronostico-y-Clasificacion-de-insumos-criticos/Insumos_Criticos_KMeans.ipynb:2758:      "userId": "08540649357404979690"
+/home/user/Pronostico-y-Clasificacion-de-insumos-criticos/Pronostico_Ventas.ipynb:64:      "userId": "08540649357404979690"
+/home/user/Pronostico-y-Clasificacion-de-insumos-criticos/Pronostico_Ventas.ipynb:103:      "userId": "08540649357404979690"
+/home/user/Pronostico-y-Clasificacion-de-insumos-criticos/Pronostico_Ventas.ipynb:214:      "userId": "08540649357404979690"
+/home/user/Pronostico-y-Clasificacion-de-insumos-criticos/Pronostico_Ventas.ipynb:219:    "outputId": "403374f0-9b36-4fee-9f4f-33f28619e46a"
+/home/user/Pronostico-y-Clasificacion-de-insumos-criticos/Pronostico_Ventas.ipynb:413:      "userId": "08540649357404979690"
+/home/user/Pronostico-y-Clasificacion-de-insumos-criticos/Pronostico_Ventas.ipynb:547:      "userId": "08540649357404979690"
+/home/user/Pronostico-y-Clasificacion-de-insumos-criticos/Pronostico_Ventas.ipynb:685:      "userId": "08540649357404979690"
+/home/user/Pronostico-y-Clasificacion-de-insumos-criticos/Pronostico_Ventas.ipynb:740:      "userId": "08540649357404979690"
+/home/user/Pronostico-y-Clasificacion-de-insumos-criticos/Pronostico_Ventas.ipynb:798:      "userId": "08540649357404979690"
+/home/user/Pronostico-y-Clasificacion-de-insumos-criticos/Pronostico_Ventas.ipynb:950:      "userId": "08540649357404979690"
+/home/user/Pronostico-y-Clasificacion-de-insumos-criticos/Pronostico_Ventas.ipynb:1072:      "userId": "08540649357404979690"
+/home/user/Pronostico-y-Clasificacion-de-insumos-criticos/Pronostico_Ventas.ipynb:1238:      "userId": "08540649357404979690"
+/home/user/Pronostico-y-Clasificacion-de-insumos-criticos/Pronostico_Ventas.ipynb:1372:      "userId": "08540649357404979690"
+/home/user/Pronostico-y-Clasificacion-de-insumos-criticos/Pronostico_Ventas.ipynb:1575:      "userId": "08540649357404979690"
+/home/user/Pronostico-y-Clasificacion-de-insumos-criticos/Pronostico_Ventas.ipynb:1750:      "userId": "08540649357404979690"
+/home/user/Pronostico-y-Clasificacion-de-insumos-criticos/Pronostico_Ventas.ipynb:1866:      "userId": "08540649357404979690"
+/home/user/Pronostico-y-Clasificacion-de-insumos-criticos/Pronostico_Ventas.ipynb:1928:      "userId": "08540649357404979690"
+  (4 línea(s) descartada(s) por ser blobs base64 de imagen)
+grep -rn '3,74' (excl. analysis_revision/): SIN COINCIDENCIAS
