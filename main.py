@@ -96,7 +96,14 @@ def clasificar_insumos_por_criticidad(requerimientos: RequerimientosDeInsumos,
 def definir_politicas_de_inventario(requerimientos: RequerimientosDeInsumos,
                                     clasificacion: ClasificacionInsumos,
                                     cfg: InsumosConfig) -> None:
-    """Etapa 3b: SS, ROP/Nivel Objetivo y Stock Máximo de los insumos con política."""
+    """Etapa 3b: SS, ROP/Nivel Objetivo y Stock Máximo de los insumos críticos finales."""
+    finales = set(clustering.insumos_criticos_finales(clasificacion, cfg)['Familia'])
+    print(f"Insumos críticos finales: {sorted(finales)}")
+    con_politica = {p.familia for p in cfg.politicas}
+    if finales != con_politica:
+        print(f"⚠️  Los insumos con política en config.py {sorted(con_politica)} no coinciden "
+              "con los críticos finales.")
+
     politicas_de_inventario = politicas.calcular_politicas_de_inventario(
         requerimientos.ventas_pronosticadas, requerimientos.lista_de_materiales,
         requerimientos.curva_de_talles, requerimientos.tipo_pronostico, cfg,

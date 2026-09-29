@@ -264,14 +264,43 @@ Score AHP = 0,604 · Alcance_pct + 0,312 · LeadTime_norm + 0,084 · Vol_norm
 | SECUNDARIO | CORDON TRENZ C/RFX, MA 501, 1,05m | 3,3 | 33,3 | 0,0 | 20,41 |
 | SECUNDARIO | CORDON TRENZ C/PIN, NAT/MA, 1,05 | 3,3 | 33,3 | 0,0 | 20,41 |
 
-Total: **4 críticos, 7 importantes, 6 secundarios**. La tabla completa, con el detalle por SKU
-hijo (talles), está en `Insumos_Criticos.xlsx`. Nótese que la etiqueta la define el cluster, no
-el score individual: por eso `SISTEMA PU TINTA, GRIS` (score 80,11) queda IMPORTANTE y `CORDON
-TRENZ NEGRO, 0,90m` (48,67) queda CRÍTICO.
+Total del K-Means: **4 en el cluster CRÍTICO, 7 importantes, 6 secundarios**. La tabla completa,
+con el detalle por SKU hijo (talles), está en `Insumos_Criticos.xlsx`. La etiqueta la define el
+cluster, no el score individual: por eso `SISTEMA PU TINTA, GRIS` (score 80,11) queda IMPORTANTE.
+
+### Insumos críticos finales
+
+El cluster CRÍTICO agrupa a las familias de mucho volumen y alcance, pero no todas tienen riesgo
+de reposición. Por eso hay una segunda etapa (`clustering.insumos_criticos_finales`):
+
+> **Crítico final** = familia del cluster CRÍTICO, comprada a un proveedor externo, con **lead
+> time mayor a la mediana del universo** (25 días, sobre las 24 familias).
+
+| Familia del cluster CRÍTICO | Vol_norm | Alcance_pct | Lead time | Score AHP | ¿Crítico final? |
+|---|---|---|---|---|---|
+| CONJ SISTEMA PU | 100,0 | 100,0 | 45 días | 100,00 | **Sí** |
+| PUNTERA ACERO 59 NORMAL | 100,0 | 66,7 | 40 días | 75,97 | **Sí** |
+| CAJA EMPAQUE (BOTA/BOTÍN) | 100,0 | 66,7 | 30 días | 68,17 | **Sí** |
+| CORDON TRENZ NEGRO, 0,90m | 100,0 | 66,7 | 5 días | 48,67 | No |
+
+**Por qué queda afuera el cordón.** En volumen y alcance es igual a la puntera y la caja; lo único
+que lo distingue es el lead time, 5 días, el más corto de todo el universo. Se repone dentro de
+la semana, así que un faltante se corrige antes de frenar la producción y no justifica un stock
+de seguridad dedicado. Tres evidencias sostienen el corte:
+
+1. **El propio K-Means lo separa cuando se le permite.** Con K = 4, 5 o 6 (K = 6 es el óptimo por
+   silhouette), el cluster de mayor criticidad queda exactamente en CONJ SISTEMA PU, PUNTERA
+   ACERO 59 NORMAL y CAJA EMPAQUE; con K = 6 el cordón forma un cluster propio. Con K = 3 queda
+   con los críticos solo porque la partición es más gruesa.
+2. **Su Score AHP (48,67) está por debajo del centroide CRÍTICO (62,2)**; los otros tres lo
+   superan (68,17 / 75,97 / 100).
+3. **Coincide con la lógica del AHP**: el lead time es el segundo criterio en peso (0,312) porque
+   mide el riesgo temporal de reposición.
 
 ### Política de inventario: Stock de Seguridad y Punto de Pedido
 
-Se definen políticas para tres insumos críticos (`config.py`, `POLITICAS_POR_DEFECTO`):
+Se definen políticas para los tres insumos críticos finales (`config.py`, `POLITICAS_POR_DEFECTO`).
+`main.py` verifica que esa lista coincida con la que devuelve la regla y avisa si no:
 
 | Insumo | Política | Revisión |
 |---|---|---|
@@ -350,8 +379,9 @@ Para leer el informe con criterio, esto es lo que el repo deja abierto:
    un análisis aparte (rama `revision-cap4`) recalcular σ con el error del hold-out subió el
    Stock de Seguridad entre +51 % y +99 % según el insumo, aunque el ROP cambió solo entre
    +3 % y +5 %, porque lo domina la demanda media.
-7. **Solo 3 de los 4 insumos críticos tienen política de inventario.** `CORDON TRENZ NEGRO,
-   0,90m` es CRÍTICO pero no figura en `POLITICAS_POR_DEFECTO`.
+7. **El umbral de lead time es la mediana del universo (25 días).** Es un corte objetivo y no
+   hay otra familia cerca: el cordón está en 5 días y la caja, la más baja de las que pasan, en
+   30. Si cambian los datos, conviene revisar que el corte siga separando grupos claros.
 8. **Sin WAPE.** El pipeline calcula MSE, RMSE, MAE, MAPE y R². El MAPE excluye los meses con
    venta real 0 (no hay error porcentual sobre base 0); en este dataset no hay ninguno. No se
    calcula WAPE.
@@ -370,7 +400,7 @@ planificacion/
 ├── estilos.py                   paleta de criticidad compartida
 ├── forecast/                    Etapa 1: pronóstico de ventas (Prophet)
 └── insumos/                     Etapas 2 y 3: curva de talles, BOM, clustering, políticas
-tests/                           58 tests (pytest)
+tests/                           60 tests (pytest)
 docs/                            figuras usadas en este README
 Pronostico_Ventas.ipynb          notebook narrativo — Etapa 1
 Insumos_Criticos_KMeans.ipynb    notebook narrativo — Etapas 2 y 3

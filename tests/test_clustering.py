@@ -85,6 +85,27 @@ def test_la_tabla_ordena_por_criticidad_y_arranca_en_uno():
     assert df_resultado['Vol_norm'].tolist()[:2] == [95.0, 90.0]
 
 
+def test_critico_final_excluye_al_critico_de_reposicion_rapida():
+    _, resultado = _entrenar()
+    # ALTA_2 sigue en el cluster CRÍTICO, pero ahora se repone en 3 días:
+    # queda por debajo de la mediana del lead time (25,5 días).
+    resultado.familias.loc[resultado.familias['Familia'] == 'ALTA_2', 'Lead_Time_dias'] = 3
+
+    finales = clustering.insumos_criticos_finales(resultado, CFG)
+
+    assert finales['Familia'].tolist() == ['ALTA_1']
+
+
+def test_critico_final_excluye_la_produccion_interna():
+    _, resultado = _entrenar()
+    resultado.familias.loc[resultado.familias['Familia'] == 'ALTA_2', 'Proveedor'] = None
+    resultado.familias['Es_Compra_Externa'] = resultado.familias['Proveedor'].notna()
+
+    finales = clustering.insumos_criticos_finales(resultado, CFG)
+
+    assert finales['Familia'].tolist() == ['ALTA_1']
+
+
 def test_evaluar_k_recorre_todo_el_rango_configurado():
     # El silhouette necesita al menos un cluster menos que observaciones: con
     # 6 familias de prueba el rango llega hasta K=4.

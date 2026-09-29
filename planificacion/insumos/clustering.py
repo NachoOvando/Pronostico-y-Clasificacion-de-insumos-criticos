@@ -107,6 +107,24 @@ def tabla_de_familias_clasificadas(clasificacion: ClasificacionInsumos,
     return df
 
 
+def insumos_criticos_finales(clasificacion: ClasificacionInsumos,
+                             cfg: InsumosConfig) -> pd.DataFrame:
+    """Familias del cluster CRÍTICO, compradas afuera, con lead time mayor a la mediana.
+
+    El K-Means junta en el cluster CRÍTICO a las familias de mucho volumen y alcance,
+    aunque se repongan rápido. Un insumo que llega en menos días que la familia típica
+    del universo no necesita stock de seguridad dedicado, así que no es crítico final.
+    La mediana se toma sobre todas las familias, igual que la normalización del K-Means.
+    """
+    df = clasificacion.familias
+    umbral = df['Lead_Time_dias'].median()
+    return (df[(df['Criticidad'] == cfg.etiquetas[0])
+               & df['Es_Compra_Externa']
+               & (df['Lead_Time_dias'] > umbral)]
+            .sort_values('Lead_Time_dias', ascending=False)
+            .reset_index(drop=True))
+
+
 def tabla_de_skus_por_familia(consumo: pd.DataFrame, df_resultado: pd.DataFrame,
                familias: pd.DataFrame, total_articulos: int,
                cfg: InsumosConfig) -> pd.DataFrame:
