@@ -84,29 +84,38 @@ meses (ene–dic 2026)**, exportados a `pronostico_ventas.xlsx`.
 | HORIZON-M09 | 34.774 | 39.166 | 3.264 |
 | TAURO 2-N04 | 42.547 | 43.358 | 3.613 |
 
-**Indicadores de error.** El pipeline calcula MSE, RMSE, MAE y R² (`forecast/metricas.py`). Se
-reportan en dos versiones (valores de `Pronostico_Ventas.ipynb`, celdas 23 y 25):
+**Indicadores de error.** El pipeline calcula MSE, RMSE, MAE, MAPE y R² (`forecast/metricas.py`).
+El MAPE es el error porcentual absoluto medio: `mean(|real − pronóstico| / real) × 100`, en %.
+Se reportan en dos versiones (RMSE, MAE y R² son los valores de `Pronostico_Ventas.ipynb`, celdas
+23 y 25):
 
 *Ajuste sobre el histórico (in-sample, 36 meses):*
 
-| Artículo | RMSE | MAE | R² |
-|---|---|---|---|
-| CRONOS-N04 | 405,79 | 328,61 | 0,97 |
-| HORIZON-M09 | 460,51 | 365,00 | 0,59 |
-| TAURO 2-N04 | 224,77 | 172,01 | 0,94 |
+| Artículo | RMSE | MAE | MAPE | R² |
+|---|---|---|---|---|
+| CRONOS-N04 | 405,79 | 328,61 | 3,31 % | 0,97 |
+| HORIZON-M09 | 460,51 | 365,00 | 14,24 % | 0,59 |
+| TAURO 2-N04 | 224,77 | 172,01 | 6,07 % | 0,94 |
 
 *Validación fuera de muestra (out-of-sample):* se entrena con los primeros 24 meses (ene-2023 a
 dic-2024) y se evalúan los últimos 12 (ene–dic 2025). Se compara contra un **baseline naive
 estacional** (cada mes se predice con el mismo mes del año anterior).
 
-| Artículo | Prophet RMSE | Prophet MAE | Prophet R² | Naive RMSE | Naive MAE | Naive R² |
-|---|---|---|---|---|---|---|
-| CRONOS-N04 | 4.347,53 | 4.284,16 | −5,67 | 1.409,90 | 913,83 | 0,30 |
-| HORIZON-M09 | 771,88 | 687,90 | −2,62 | 361,86 | 230,42 | 0,21 |
-| TAURO 2-N04 | 1.198,96 | 1.078,38 | −4,83 | 416,10 | 269,75 | 0,30 |
+| Artículo | Prophet RMSE | Prophet MAE | Prophet MAPE | Prophet R² | Naive RMSE | Naive MAE | Naive MAPE | Naive R² |
+|---|---|---|---|---|---|---|---|---|
+| CRONOS-N04 | 4.347,53 | 4.284,16 | 32,85 %† | −5,67 | 1.409,90 | 913,83 | 7,66 % | 0,30 |
+| HORIZON-M09 | 771,88 | 687,90 | 25,12 % | −2,62 | 361,86 | 230,42 | 8,01 % | 0,21 |
+| TAURO 2-N04 | 1.198,96 | 1.078,38 | 39,42 %† | −4,83 | 416,10 | 269,75 | 7,66 % | 0,30 |
 
 R² promedio fuera de muestra: Prophet **−4,37** vs. naive **0,27**. Ver la sección
 [Limitaciones](#limitaciones-y-observaciones): en este hold-out Prophet no supera al baseline.
+
+† El notebook se ejecutó antes de agregar el MAPE y no guardó las predicciones del hold-out, así
+que su MAPE no se puede reconstruir. El valor informado sale de una re-ejecución con el código
+actual, cuyo ajuste de Prophet difiere del del notebook en estos dos artículos (RMSE 3.974,55 y
+1.434,33 en la re-ejecución; ver Limitaciones, punto 2). Para HORIZON-M09 la re-ejecución
+coincide exacto con el notebook. La conclusión no cambia: el MAPE de Prophet (25–39 %) queda
+muy por encima del naive (7–8 %) en los tres artículos.
 
 ---
 
@@ -343,8 +352,9 @@ Para leer el informe con criterio, esto es lo que el repo deja abierto:
    +3 % y +5 %, porque lo domina la demanda media.
 7. **Solo 3 de los 4 insumos críticos tienen política de inventario.** `CORDON TRENZ NEGRO,
    0,90m` es CRÍTICO pero no figura en `POLITICAS_POR_DEFECTO`.
-8. **Indicadores de error acotados.** El pipeline calcula MSE, RMSE, MAE y R²; no calcula MAPE
-   ni WAPE, que suelen pedirse en un informe de pronóstico.
+8. **Sin WAPE.** El pipeline calcula MSE, RMSE, MAE, MAPE y R². El MAPE excluye los meses con
+   venta real 0 (no hay error porcentual sobre base 0); en este dataset no hay ninguno. No se
+   calcula WAPE.
 9. **Pronóstico 2026 de CRONOS-N04 a la baja** (121.993 vs. 144.227 de 2025, −15 %), el artículo
    de mayor volumen de ventas. Conviene validar ese nivel con el área comercial.
 

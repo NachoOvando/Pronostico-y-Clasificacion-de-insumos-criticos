@@ -5,13 +5,28 @@ import pandas as pd
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 
 
+def mape(y_true, y_pred) -> float:
+    """Error porcentual absoluto medio, en %.
+
+    Los períodos con valor real 0 no tienen error porcentual definido y se
+    excluyen del promedio; si todos son 0 devuelve NaN.
+    """
+    y_true = np.asarray(y_true, dtype=float)
+    y_pred = np.asarray(y_pred, dtype=float)
+    valido = y_true != 0
+    if not valido.any():
+        return float('nan')
+    return float(np.mean(np.abs((y_true[valido] - y_pred[valido]) / y_true[valido])) * 100)
+
+
 def metricas(y_true, y_pred) -> dict[str, float]:
-    """Calcula MSE, RMSE, MAE y R²."""
+    """Calcula MSE, RMSE, MAE, MAPE (en %) y R²."""
     mse = mean_squared_error(y_true, y_pred)
     return {
         'MSE': mse,
         'RMSE': np.sqrt(mse),
         'MAE': mean_absolute_error(y_true, y_pred),
+        'MAPE': mape(y_true, y_pred),
         'R2': r2_score(y_true, y_pred),
     }
 
