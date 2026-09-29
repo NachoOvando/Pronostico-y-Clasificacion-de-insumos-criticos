@@ -4,7 +4,7 @@ import hashlib
 import json
 import logging
 import random
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 
 import numpy as np
@@ -13,17 +13,13 @@ from prophet import Prophet
 from prophet.diagnostics import cross_validation, performance_metrics
 
 from planificacion.config import ForecastConfig
+from planificacion.forecast.datos import serie_articulo
 
 logger = logging.getLogger(__name__)
 
 
 def silenciar_logs_prophet() -> None:
-    """Apaga los logs verbosos de Prophet/cmdstanpy.
-
-    Reemplaza al `warnings.filterwarnings('ignore')` global que tenía el
-    notebook: ese ocultaba también los `FutureWarning` de pandas, que en este
-    entorno (pandas 3.x) sí conviene ver.
-    """
+    """Apaga los logs de Prophet/cmdstanpy sin ocultar los warnings de pandas."""
     for nombre in ('prophet', 'cmdstanpy'):
         lg = logging.getLogger(nombre)
         lg.setLevel(logging.ERROR)
@@ -82,7 +78,6 @@ class ResultadoBusqueda:
     params: dict
     score: float
     desde_cache: bool = False
-    combinaciones_fallidas: list[dict] = field(default_factory=list)
 
 
 def _clave_cache(articulo: str, serie: pd.DataFrame, cfg: ForecastConfig) -> str:
@@ -115,13 +110,11 @@ def random_search(serie: pd.DataFrame, cfg: ForecastConfig,
     """Random Search de hiperparámetros de Prophet sobre una serie.
 
     Muestrea `cfg.n_iter` combinaciones y devuelve la de mejor métrica de
-    cross-validation. Las combinaciones que no convergen se descartan (score
-    infinito) pero quedan registradas, en vez de desaparecer en silencio.
+    cross-validation. Las combinaciones que no convergen se descartan con un warning.
     """
     rng = random.Random(cfg.random_seed)
     mejor_params: dict | None = None
     mejor_score = np.inf
-    fallidas: list[dict] = []
 
     for _ in range(cfg.n_iter):
         params = muestrear_hiperparametros(rng)
@@ -129,7 +122,6 @@ def random_search(serie: pd.DataFrame, cfg: ForecastConfig,
             score = evaluar_cv(serie, params, cfg)
         except Exception as exc:  # noqa: BLE001 - combinación inválida o sin convergencia
             logger.warning("[%s] combinación descartada (%s): %s", articulo, exc, params)
-            fallidas.append(params)
             continue
         if score < mejor_score:
             mejor_score, mejor_params = score, params
@@ -139,8 +131,7 @@ def random_search(serie: pd.DataFrame, cfg: ForecastConfig,
             f"[{articulo}] ninguna de las {cfg.n_iter} combinaciones de "
             f"hiperparámetros convergió. Revisar la serie de entrada."
         )
-    return ResultadoBusqueda(articulo, mejor_params, mejor_score,
-                             combinaciones_fallidas=fallidas)
+    return ResultadoBusqueda(articulo, mejor_params, mejor_score)
 
 
 def buscar_hiperparametros(df_prophet: pd.DataFrame, articulos: list[str],
@@ -152,8 +143,6 @@ def buscar_hiperparametros(df_prophet: pd.DataFrame, articulos: list[str],
     set global sería subóptimo. El resultado se cachea en disco: re-correr el
     notebook sin cambiar datos ni semilla no repite los ~300 ajustes de Prophet.
     """
-    from planificacion.forecast.datos import serie_articulo
-
     cache = _leer_cache(cfg.cache_hiperparametros) if usar_cache else {}
     resultados: dict[str, ResultadoBusqueda] = {}
     hubo_busqueda = False
@@ -210,12 +199,7 @@ class Ajuste:
 def ajustar_y_pronosticar(serie: pd.DataFrame, params: dict, cfg: ForecastConfig,
                           ultima_fecha: pd.Timestamp,
                           articulo: str = '') -> Ajuste:
-    """Entrena con la serie completa y predice histórico + horizonte en una pasada.
-
-    El notebook antes entrenaba en la Sección 7.1, predecía in-sample para las
-    métricas de ajuste, y en la Sección 8 volvía a predecir el rango completo con
-    el mismo modelo — recalculando el tramo que ya tenía.
-    """
+    """Entrena con la serie completa y predice histórico + horizonte en una pasada."""
     modelo = crear_modelo(params)
     modelo.fit(serie)
 
@@ -234,8 +218,6 @@ def ajustar_modelos_por_articulo(df_prophet: pd.DataFrame, articulos: list[str],
                   params_por_articulo: dict[str, dict],
                   cfg: ForecastConfig) -> dict[str, Ajuste]:
     """Aplica `ajustar_y_pronosticar` a cada artículo con sus mejores parámetros."""
-    from planificacion.forecast.datos import serie_articulo
-
     ultima_fecha = df_prophet['ds'].max()
     return {
         articulo: ajustar_y_pronosticar(

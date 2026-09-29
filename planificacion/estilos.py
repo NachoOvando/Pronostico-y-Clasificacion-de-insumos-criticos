@@ -1,9 +1,4 @@
-"""Paleta visual del informe — única fuente de verdad.
-
-Antes del refactor los mismos colores de criticidad estaban escritos cuatro
-veces (tabla de clasificación, gráfico de dispersión, detalle de SKUs y writer
-de Excel). Cambiar un color implicaba encontrar las cuatro copias.
-"""
+"""Paleta visual del informe (gráficos, tablas del notebook y Excel): única fuente de verdad."""
 
 # ── Colores institucionales del informe ───────────────────────────────────────
 AZUL = '#1B3A6B'        # títulos

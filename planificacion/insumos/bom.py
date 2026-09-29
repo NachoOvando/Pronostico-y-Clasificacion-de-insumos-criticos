@@ -22,10 +22,10 @@ def detectar_tipo_pronostico(df_forecast: pd.DataFrame,
     Si `tipo_forzado` viene dado, se usa tal cual; si no, se busca una variante
     de 'pronostico'/'forecast'/'proyectado' sin distinguir tildes ni mayúsculas.
     """
-    valores = list(df_forecast['Tipo'].unique())
     if tipo_forzado is not None:
         return tipo_forzado
 
+    valores = list(df_forecast['Tipo'].unique())
     coincidencias = [v for v in valores
                      if any(c in normalizar(v) for c in CANDIDATOS_TIPO)]
     if not coincidencias:

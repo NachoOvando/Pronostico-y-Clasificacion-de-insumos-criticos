@@ -370,7 +370,7 @@ planificacion/
 ├── estilos.py                   paleta de criticidad compartida
 ├── forecast/                    Etapa 1: pronóstico de ventas (Prophet)
 └── insumos/                     Etapas 2 y 3: curva de talles, BOM, clustering, políticas
-tests/                           54 tests (pytest)
+tests/                           58 tests (pytest)
 docs/                            figuras usadas en este README
 Pronostico_Ventas.ipynb          notebook narrativo — Etapa 1
 Insumos_Criticos_KMeans.ipynb    notebook narrativo — Etapas 2 y 3

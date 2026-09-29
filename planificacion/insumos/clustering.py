@@ -41,7 +41,6 @@ class ClasificacionInsumos:
 
     familias: pd.DataFrame          # con Cluster_raw, Criticidad y Es_Compra_Externa
     centroides: np.ndarray        # escala original, indexados por cluster crudo
-    orden: np.ndarray             # clusters ordenados por score AHP descendente
     mapa_etiquetas: dict[int, str]
     silhouette: float
 
@@ -86,7 +85,6 @@ def clasificar_por_kmeans(familias: pd.DataFrame, variables_escaladas: np.ndarra
     return ClasificacionInsumos(
         familias=df,
         centroides=centroides,
-        orden=orden,
         mapa_etiquetas=mapa_etiquetas,
         silhouette=float(silhouette_score(variables_escaladas, df['Cluster_raw'])),
     )
