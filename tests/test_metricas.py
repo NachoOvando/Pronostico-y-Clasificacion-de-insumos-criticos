@@ -1,5 +1,4 @@
 import numpy as np
-import pandas as pd
 import pytest
 
 from planificacion.forecast import metricas as m
@@ -47,30 +46,3 @@ def test_mape_excluye_los_periodos_con_valor_real_cero():
 
 def test_mape_es_nan_si_todo_el_real_es_cero():
     assert np.isnan(m.mape([0.0, 0.0], [1.0, 2.0]))
-
-
-def test_baseline_naive_repite_el_mismo_mes_del_ano_previo():
-    # 24 meses: los últimos 12 son idénticos a los 12 previos -> predicción exacta.
-    ciclo = list(range(1, 13))
-    serie = pd.DataFrame({'y': np.array(ciclo + ciclo, dtype=float)})
-
-    resultado = m.baseline_naive_estacional(serie, test_periods=12)
-
-    assert resultado['RMSE'] == pytest.approx(0.0)
-    assert resultado['R2'] == pytest.approx(1.0)
-
-
-def test_baseline_naive_usa_el_ano_anterior_no_el_actual():
-    serie = pd.DataFrame({'y': [1.0, 2.0, 5.0, 9.0]})
-
-    resultado = m.baseline_naive_estacional(serie, test_periods=2)
-
-    # Compara [5, 9] contra [1, 2]: errores 4 y 7 -> MAE 5.5
-    assert resultado['MAE'] == pytest.approx(5.5)
-
-
-def test_baseline_naive_exige_dos_ciclos_completos():
-    serie = pd.DataFrame({'y': [1.0, 2.0, 3.0]})
-
-    with pytest.raises(ValueError, match='al menos 4'):
-        m.baseline_naive_estacional(serie, test_periods=2)

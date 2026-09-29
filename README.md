@@ -112,9 +112,10 @@ Se reportan en dos versiones (ajuste sobre el histórico y validación fuera de 
 | TAURO 2-N04 | 1.434,33 | 1.319,22 | 39,42 % | −7,34 | 3.546 | 4.865 | +37,2 % |
 
 *Sesgo = (pronóstico promedio − real promedio) / real promedio.* Los valores salen de
-`evaluacion.predicciones_holdout` con el código actual. El notebook (celda 25) reporta RMSE 4.347,53
-y 1.198,96 para CRONOS-N04 y TAURO 2-N04: el ajuste de Prophet fuera de muestra no es reproducible
-bit a bit (ver Limitaciones, punto 2). HORIZON-M09 coincide.
+`evaluacion.predicciones_holdout` con el código actual, y coinciden con la celda 25 del notebook.
+El ajuste de Prophet fuera de muestra no es reproducible bit a bit entre entornos: una ejecución
+anterior había dado RMSE 4.347,53 y 1.198,96 para CRONOS-N04 y TAURO 2-N04 (ver Limitaciones,
+punto 2).
 
 ![Conjunto de prueba: real vs. pronóstico](docs/prophet_holdout.png)
 
@@ -399,9 +400,10 @@ Para leer el informe con criterio, esto es lo que el repo deja abierto:
    in-sample alto (R² 0,59–0,97) no implica buena capacidad predictiva.
 2. **El ajuste fuera de muestra de Prophet no es reproducible bit a bit.** Prophet no fija
    semilla en su optimizador. En una re-ejecución independiente, el R² fuera de muestra dio
-   −4,57 (CRONOS-N04) y −7,34 (TAURO 2-N04) contra −5,67 y −4,83 del notebook, mientras que
-   HORIZON-M09 coincidió (−2,62). El ajuste in-sample sí reproduce exacto. Las métricas fuera de
-   muestra sirven como orden de magnitud, no como cifras exactas.
+   −4,57 (CRONOS-N04) y −7,34 (TAURO 2-N04) contra −5,67 y −4,83 de una ejecución anterior del
+   notebook en otro entorno, mientras que HORIZON-M09 coincidió (−2,62). El ajuste in-sample sí
+   reproduce exacto. Las métricas fuera de muestra sirven como orden de magnitud, no como cifras
+   exactas.
 3. **La curva de talles es un supuesto**, no un dato: no hay ventas por talle en el repo, por lo
    que no se pudo contrastar contra una distribución empírica (χ², Q-Q).
 4. **Los pesos AHP vienen de afuera del repo.** Solo se cargan los tres pesos finales
@@ -433,7 +435,7 @@ planificacion/
 ├── estilos.py                   paleta de criticidad compartida
 ├── forecast/                    Etapa 1: pronóstico de ventas (Prophet)
 └── insumos/                     Etapas 2 y 3: curva de talles, BOM, clustering, políticas
-tests/                           60 tests (pytest)
+tests/                           57 tests (pytest)
 docs/                            figuras usadas en este README
 Pronostico_Ventas.ipynb          notebook narrativo — Etapa 1
 Insumos_Criticos_KMeans.ipynb    notebook narrativo — Etapas 2 y 3

@@ -4,7 +4,7 @@ import pandas as pd
 
 from planificacion.config import ForecastConfig
 from planificacion.forecast.datos import serie_articulo
-from planificacion.forecast.metricas import baseline_naive_estacional, metricas
+from planificacion.forecast.metricas import metricas
 from planificacion.forecast.modelo import Ajuste, crear_modelo
 
 
@@ -47,18 +47,11 @@ def evaluar_holdout(serie: pd.DataFrame, params: dict,
 
 def metricas_de_validacion_out_of_sample(df_prophet: pd.DataFrame, articulos: list[str],
                          params_por_articulo: dict[str, dict],
-                         cfg: ForecastConfig) -> tuple[pd.DataFrame, pd.DataFrame]:
-    """Compara Prophet contra el baseline naive estacional sobre el hold-out.
-
-    Devuelve `(metricas_prophet, metricas_baseline)`.
-    """
-    filas_prophet, filas_baseline = [], []
-    for articulo in articulos:
-        serie = serie_articulo(df_prophet, articulo)
-        filas_prophet.append({
-            'Articulo': articulo,
-            **evaluar_holdout(serie, params_por_articulo[articulo], cfg)})
-        filas_baseline.append({
-            'Articulo': articulo,
-            **baseline_naive_estacional(serie, cfg.test_periods)})
-    return pd.DataFrame(filas_prophet), pd.DataFrame(filas_baseline)
+                         cfg: ForecastConfig) -> pd.DataFrame:
+    """Métricas de Prophet por artículo sobre el hold-out (out-of-sample)."""
+    return pd.DataFrame([
+        {'Articulo': articulo,
+         **evaluar_holdout(serie_articulo(df_prophet, articulo),
+                           params_por_articulo[articulo], cfg)}
+        for articulo in articulos
+    ])
