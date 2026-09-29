@@ -92,8 +92,7 @@ meses (ene–dic 2026)**, exportados a `pronostico_ventas.xlsx`.
 
 **Indicadores de error.** El pipeline calcula MSE, RMSE, MAE, MAPE y R² (`forecast/metricas.py`).
 El MAPE es el error porcentual absoluto medio: `mean(|real − pronóstico| / real) × 100`, en %.
-Se reportan en dos versiones (RMSE, MAE y R² son los valores de `Pronostico_Ventas.ipynb`, celdas
-23 y 25):
+Se reportan en dos versiones (ajuste sobre el histórico y validación fuera de muestra):
 
 *Ajuste sobre el histórico (in-sample, 36 meses):*
 
@@ -103,25 +102,53 @@ Se reportan en dos versiones (RMSE, MAE y R² son los valores de `Pronostico_Ven
 | HORIZON-M09 | 460,51 | 365,00 | 14,24 % | 0,59 |
 | TAURO 2-N04 | 224,77 | 172,01 | 6,07 % | 0,94 |
 
-*Validación fuera de muestra (out-of-sample):* se entrena con los primeros 24 meses (ene-2023 a
-dic-2024) y se evalúan los últimos 12 (ene–dic 2025). Se compara contra un **baseline naive
-estacional** (cada mes se predice con el mismo mes del año anterior).
+*Validación fuera de muestra (conjunto de prueba):* se entrena con los primeros 24 meses
+(ene-2023 a dic-2024) y se evalúan los últimos 12 (ene–dic 2025), que el modelo no vio.
 
-| Artículo | Prophet RMSE | Prophet MAE | Prophet MAPE | Prophet R² | Naive RMSE | Naive MAE | Naive MAPE | Naive R² |
-|---|---|---|---|---|---|---|---|---|
-| CRONOS-N04 | 4.347,53 | 4.284,16 | 32,85 %† | −5,67 | 1.409,90 | 913,83 | 7,66 % | 0,30 |
-| HORIZON-M09 | 771,88 | 687,90 | 25,12 % | −2,62 | 361,86 | 230,42 | 8,01 % | 0,21 |
-| TAURO 2-N04 | 1.198,96 | 1.078,38 | 39,42 %† | −4,83 | 416,10 | 269,75 | 7,66 % | 0,30 |
+| Artículo | RMSE | MAE | MAPE | R² | Real promedio | Pronóstico promedio | Sesgo |
+|---|---|---|---|---|---|---|---|
+| CRONOS-N04 | 3.974,55 | 3.912,83 | 32,85 % | −4,57 | 12.019 | 8.106 | −32,6 % |
+| HORIZON-M09 | 771,88 | 687,90 | 25,12 % | −2,62 | 2.898 | 3.586 | +23,7 % |
+| TAURO 2-N04 | 1.434,33 | 1.319,22 | 39,42 % | −7,34 | 3.546 | 4.865 | +37,2 % |
 
-R² promedio fuera de muestra: Prophet **−4,37** vs. naive **0,27**. Ver la sección
-[Limitaciones](#limitaciones-y-observaciones): en este hold-out Prophet no supera al baseline.
+*Sesgo = (pronóstico promedio − real promedio) / real promedio.* Los valores salen de
+`evaluacion.predicciones_holdout` con el código actual. El notebook (celda 25) reporta RMSE 4.347,53
+y 1.198,96 para CRONOS-N04 y TAURO 2-N04: el ajuste de Prophet fuera de muestra no es reproducible
+bit a bit (ver Limitaciones, punto 2). HORIZON-M09 coincide.
 
-† El notebook se ejecutó antes de agregar el MAPE y no guardó las predicciones del hold-out, así
-que su MAPE no se puede reconstruir. El valor informado sale de una re-ejecución con el código
-actual, cuyo ajuste de Prophet difiere del del notebook en estos dos artículos (RMSE 3.974,55 y
-1.434,33 en la re-ejecución; ver Limitaciones, punto 2). Para HORIZON-M09 la re-ejecución
-coincide exacto con el notebook. La conclusión no cambia: el MAPE de Prophet (25–39 %) queda
-muy por encima del naive (7–8 %) en los tres artículos.
+![Conjunto de prueba: real vs. pronóstico](docs/prophet_holdout.png)
+
+**Error mes a mes** (error = (pronóstico − real) / real):
+
+| Mes | CRONOS real | CRONOS pron. | CRONOS error | HORIZON real | HORIZON pron. | HORIZON error | TAURO real | TAURO pron. | TAURO error |
+|---|---|---|---|---|---|---|---|---|---|
+| ene-25 | 8.684 | 6.143 | −29,3 % | 2.094 | 3.108 | +48,4 % | 2.562 | 4.683 | +82,8 % |
+| feb-25 | 10.187 | 6.399 | −37,2 % | 2.456 | 3.396 | +38,3 % | 3.005 | 4.872 | +62,1 % |
+| mar-25 | 15.453 | 11.085 | −28,3 % | 3.726 | 4.059 | +8,9 % | 4.559 | 5.051 | +10,8 % |
+| abr-25 | 12.199 | 6.897 | −43,5 % | 2.941 | 3.245 | +10,3 % | 3.599 | 4.176 | +16,0 % |
+| may-25 | 13.082 | 8.746 | −33,1 % | 3.154 | 3.397 | +7,7 % | 3.859 | 4.950 | +28,3 % |
+| jun-25 | 13.720 | 10.766 | −21,5 % | 3.308 | 4.359 | +31,8 % | 4.047 | 6.124 | +51,3 % |
+| jul-25 | 11.884 | 7.848 | −34,0 % | 2.865 | 3.975 | +38,7 % | 3.506 | 4.230 | +20,6 % |
+| ago-25 | 12.577 | 9.156 | −27,2 % | 3.032 | 3.614 | +19,2 % | 3.710 | 4.877 | +31,4 % |
+| sep-25 | 12.873 | 8.848 | −31,3 % | 3.104 | 3.727 | +20,1 % | 3.797 | 4.628 | +21,9 % |
+| oct-25 | 11.119 | 7.553 | −32,1 % | 2.681 | 3.589 | +33,9 % | 3.280 | 4.717 | +43,8 % |
+| nov-25 | 11.751 | 7.390 | −37,1 % | 2.833 | 2.943 | +3,9 % | 3.467 | 5.336 | +53,9 % |
+| dic-25 | 10.698 | 6.441 | −39,8 % | 2.580 | 3.617 | +40,2 % | 3.156 | 4.733 | +50,0 % |
+| **Promedio** | 12.019 | 8.106 | −32,6 % | 2.898 | 3.586 | +23,7 % | 3.546 | 4.865 | +37,2 % |
+
+**Cómo leerlo:**
+
+- **El error es principalmente de nivel, no de forma.** En cada artículo los 12 meses fallan en el
+  mismo sentido: CRONOS-N04 queda por debajo del real todos los meses y HORIZON-M09 y TAURO 2-N04
+  por encima. Por eso el MAE coincide con el sesgo absoluto medio.
+- **CRONOS-N04 sigue bien el patrón mensual** (correlación 0,91 entre real y pronóstico) pero con
+  el nivel equivocado: si se corrigiera el nivel, su MAPE bajaría de 32,9 % a 4,8 %. En HORIZON-M09
+  (correlación 0,61; MAPE corregido 11,3 %) y TAURO 2-N04 (0,35; 14,5 %) falla también la forma.
+- **R² negativo** significa que, sobre el conjunto de prueba, el pronóstico se aleja del real más
+  que el simple promedio de esos 12 meses. Es coherente con un modelo que acierta poco el nivel de
+  2025.
+- **Las cifras del ajuste sobre el histórico (R² 0,59–0,97) no anticipan este comportamiento**: el
+  ajuste mide qué tanto se parece el modelo a datos que ya vio.
 
 ---
 
@@ -366,15 +393,15 @@ SS = 2,05 × 470,5 × √2,33 ≈ 1.473,2; nivel objetivo S = 13.779,2 × 2,33 +
 
 Para leer el informe con criterio, esto es lo que el repo deja abierto:
 
-1. **Prophet no supera al baseline naive en el hold-out.** Con 24 meses de entrenamiento,
-   el R² fuera de muestra es negativo en los tres artículos (promedio −4,37 vs. 0,27 del naive
-   estacional). El propio notebook lo reconoce. El ajuste in-sample alto (R² 0,59–0,97) no
-   implica buena capacidad predictiva.
+1. **El error de Prophet en el conjunto de prueba es alto.** Con 24 meses de entrenamiento, el
+   MAPE fuera de muestra es de 25 % a 39 % y el R² es negativo en los tres artículos. El error es
+   sobre todo de nivel (12 de 12 meses con el mismo signo, ver la sección de validación). El ajuste
+   in-sample alto (R² 0,59–0,97) no implica buena capacidad predictiva.
 2. **El ajuste fuera de muestra de Prophet no es reproducible bit a bit.** Prophet no fija
    semilla en su optimizador. En una re-ejecución independiente, el R² fuera de muestra dio
    −4,57 (CRONOS-N04) y −7,34 (TAURO 2-N04) contra −5,67 y −4,83 del notebook, mientras que
-   HORIZON-M09 coincidió (−2,62). El ajuste in-sample y el baseline sí reproducen exacto. Las
-   métricas fuera de muestra sirven como orden de magnitud, no como cifras exactas.
+   HORIZON-M09 coincidió (−2,62). El ajuste in-sample sí reproduce exacto. Las métricas fuera de
+   muestra sirven como orden de magnitud, no como cifras exactas.
 3. **La curva de talles es un supuesto**, no un dato: no hay ventas por talle en el repo, por lo
    que no se pudo contrastar contra una distribución empírica (χ², Q-Q).
 4. **Los pesos AHP vienen de afuera del repo.** Solo se cargan los tres pesos finales
@@ -445,6 +472,9 @@ X, _ = clustering.escalar_variables(req.familias_de_compra)
 graficos.seleccion_k(clustering.evaluar_cantidad_de_clusters(X, cfg), cfg).savefig('docs/seleccion_k.png', dpi=150, bbox_inches='tight')
 "
 ```
+
+La tabla y el gráfico del conjunto de prueba salen de `evaluacion.predicciones_holdout(serie,
+params, cfg)`, que devuelve `ds | yhat | y` de los 12 meses de 2025 para un artículo.
 
 ## Tests
 

@@ -23,17 +23,25 @@ def metricas_de_ajuste_historico(ajustes: dict[str, Ajuste],
     return pd.DataFrame(filas)
 
 
-def evaluar_holdout(serie: pd.DataFrame, params: dict,
-                    cfg: ForecastConfig) -> dict[str, float]:
-    """Entrena con todo menos los últimos `test_periods` meses y evalúa el pronóstico."""
+def predicciones_holdout(serie: pd.DataFrame, params: dict,
+                         cfg: ForecastConfig) -> pd.DataFrame:
+    """Entrena con todo menos los últimos `test_periods` meses y predice esos meses.
+
+    Devuelve `ds | yhat | y` (pronóstico y valor real de cada mes del hold-out).
+    """
     train = serie.iloc[:-cfg.test_periods]
     test = serie.iloc[-cfg.test_periods:]
 
     modelo = crear_modelo(params)
     modelo.fit(train)
     future = modelo.make_future_dataframe(periods=cfg.test_periods, freq='MS')
-    pred = modelo.predict(future)[['ds', 'yhat']].merge(test, on='ds', how='inner')
+    return modelo.predict(future)[['ds', 'yhat']].merge(test, on='ds', how='inner')
 
+
+def evaluar_holdout(serie: pd.DataFrame, params: dict,
+                    cfg: ForecastConfig) -> dict[str, float]:
+    """Métricas de error del pronóstico sobre los últimos `test_periods` meses."""
+    pred = predicciones_holdout(serie, params, cfg)
     return metricas(pred['y'].values, pred['yhat'].values)
 
 
