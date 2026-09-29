@@ -274,21 +274,6 @@ Total del K-Means: **4 en el cluster CRÍTICO, 7 importantes, 6 secundarios**. L
 con el detalle por SKU hijo (talles), está en `Insumos_Criticos.xlsx`. La etiqueta la define el
 cluster, no el score individual: por eso `SISTEMA PU TINTA, GRIS` (score 80,11) queda IMPORTANTE.
 
-**Sensibilidad: qué pasa si los pesos AHP ponderan el K-Means.** Se probó multiplicar las
-variables escaladas por los pesos antes de agrupar (mismo K, semilla y etiquetado). Los
-resultados cambian, por eso se mantiene el método original:
-
-| Variante | Silhouette | Familias de Compras que cambian de nivel | Críticos finales |
-|---|---|---|---|
-| **Original** (variables con igual peso) | 0,524 | — | 3 |
-| Variables × √w (ponderación coherente con la distancia al cuadrado) | 0,588 | 2 de 17: `SISTEMA PU TINTA, GRIS` y `NEGRO` pasan a CRÍTICO | 5 |
-| Variables × w | 0,626 | 9 de 17 | 2 |
-
-Con los pesos, el alcance (0,604) domina y el volumen (0,084) casi no influye. Las tintas, que
-se usan en los tres artículos pero con poco volumen, pasan a CRÍTICO, y con × w la puntera y la
-caja dejan de serlo. Un silhouette mayor no las hace mejores: solo indica que los grupos quedan
-más compactos con la variable de volumen atenuada.
-
 ### Insumos críticos finales
 
 El cluster CRÍTICO agrupa a las familias de mucho volumen y alcance, pero no todas tienen riesgo
