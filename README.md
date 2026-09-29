@@ -58,7 +58,7 @@ lineal, sin *holidays* ni regresores externos.
 | Cross-validation | `initial` 730 días · `period` 90 días · `horizon` 180 días |
 | `changepoint_prior_scale` | log-uniforme en [0,01 ; 0,5] |
 | `seasonality_prior_scale` | log-uniforme en [1 ; 10] |
-| `seasonality_mode` | `additive` o `multiplicative` |
+| `seasonality_mode` | modo de la estacionalidad (2 opciones), sorteado y validado por CV |
 | `n_changepoints` | {5, 10, 15, 20, 25} |
 | `yearly_seasonality` | {True, 5, 8, 10} (si es entero, es el orden de Fourier) |
 
@@ -67,11 +67,17 @@ semilla ni la grilla, no se repite la búsqueda.
 
 **Hiperparámetros ganadores:**
 
-| Artículo | changepoint_prior_scale | seasonality_prior_scale | seasonality_mode | n_changepoints | yearly_seasonality | RMSE (CV) |
-|---|---|---|---|---|---|---|
-| CRONOS-N04 | 0,335 | 2,508 | additive | 10 | 10 | 1.812,68 |
-| HORIZON-M09 | 0,122 | 1,059 | multiplicative | 10 | 5 | 249,88 |
-| TAURO 2-N04 | 0,100 | 6,448 | additive | 10 | 10 | 338,36 |
+| Artículo | changepoint_prior_scale | seasonality_prior_scale | n_changepoints | yearly_seasonality | RMSE (CV) |
+|---|---|---|---|---|---|
+| CRONOS-N04 | 0,335 | 2,508 | 10 | 10 | 1.812,68 |
+| HORIZON-M09 | 0,122 | 1,059 | 10 | 5 | 249,88 |
+| TAURO 2-N04 | 0,100 | 6,448 | 10 | 10 | 338,36 |
+
+El modo de la estacionalidad también lo define la búsqueda (valores completos en
+`hiperparametros_prophet.json`). Con solo 36 meses por artículo las dos opciones dan errores de
+cross-validation muy parecidos, por lo que esa elección no debe leerse como una característica
+propia de cada producto, sino como el resultado de la validación cruzada entre opciones casi
+equivalentes.
 
 ### Pronóstico e indicadores
 
